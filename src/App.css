@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap");
+
+.logo {
+  font-family: "UnifrakturCook", cursive;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.searchInput:hover,.searchInput:focus{
+  box-shadow: 0 0 1em #00000013;
+}
+
+.searchInput:focus{
+  outline: none;
+}
+
