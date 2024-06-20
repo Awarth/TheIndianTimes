@@ -6,23 +6,16 @@ function Detailed() {
   const { articleId } = useParams();
   const [article, setArticle] = useState(null);
 
-  const baseURL = "https://newsapi.org/v2/everything";
-  const apiKey = "b9d4f5029d1c4bac8b519f72a0487f67";
+  const baseURL = "https://api.currentsapi.services/v1/search";
+  const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71"; // Replace with your Currents API key
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await fetch(
-          `${baseURL}?q=${articleId.replace(
-            /-/g,
-            " "
-          )}&apiKey=${apiKey}&language=en`
-        );
+        const response = await fetch(`${baseURL}?id=${articleId}&apiKey=${apiKey}`);
         const data = await response.json();
-        if (data.articles && data.articles.length > 0) {
-          setArticle(data.articles[0]);
-        } else {
-          console.log("No articles found.");
+        if (data.news && data.news.length > 0) {
+          setArticle(data.news[0]);
         }
       } catch (error) {
         console.log(error);
@@ -42,37 +35,32 @@ function Detailed() {
   return (
     <div className="detailed-article w-full px-1 py-12 flex justify-center items-center">
       <div className="detailedMain max-w-screen-md">
-        <h1 className="w-full text-4xl max-sm:text-3xl font-semibold mb-2">
-          {article.title}
-        </h1>
+        <h1 className="w-full text-4xl max-sm:text-3xl font-semibold mb-2">{article.title}</h1>
         <p className="w-full border-b border-gray-400 pb-2 text-xl text-gray-800">
           {article.description}
         </p>
         <p className="text-gray-800 pt-1">
-          <span className="font-medium">Written by:</span> {article.author} |{" "}
-          {article.source.name}
+          {" "}
+          <span className="font-medium"> Written by:</span> {article.author}
         </p>
         <p className="text-gray-800">
-          <span className="font-medium">Updated at:</span>{" "}
-          {formatDate(article.publishedAt)}
+          {" "}
+          <span className="font-medium"> Updated at:</span>{" "}
+          {formatDate(article.published)}
         </p>
         <img
-          src={article.urlToImage}
+          src={article.image}
           alt={article.title}
           className="w-full my-2"
         />
-        <p className="text-2xl text-gray-800">{article.content}</p>
-        <div className="mt-3 text-xl text-gray-800">
-          Read the full article here: 
-          <a
-            className="text-xl text-blue-500 ml-2 cursor-pointer"
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Click Me
+        <p className="text-2xl text-gray-800">{article.description}</p>
+
+        <p>
+          <p className="mt-3 text-xl text-gray-800">Read the full article here : </p>
+          <a className="text-xl text-blue-500 " href={article.url} target="_blank" rel="noopener noreferrer">
+            Click here
           </a>
-        </div>
+        </p>
       </div>
     </div>
   );
