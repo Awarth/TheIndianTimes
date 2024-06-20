@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import defaultBG from "../images/default.png";
 
 const ArticleCard = ({ article, onReadMore, formattedDate }) => {
-  console.log(article);
   return (
     <div className="article-card flex flex-col bg-white shadow-md rounded-lg overflow-hidden h-[500px]">
       <img
