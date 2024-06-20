@@ -34,7 +34,7 @@ function Footer() {
           className="logo text-center text-5xl text-[#132643] max-450:text-4xl max-350:text-3xl "
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-          The Indian Times
+          The Bharat Times
         </h1>
           </Link>
       </div>
@@ -78,7 +78,7 @@ function Footer() {
             Careers
           </p>
           <p className="text-lg font-normal cursor-pointer text-gray-600 hover:text-gray-700">
-            Today's Paper
+            Today&apos;s Paper
           </p>
           <p className="text-lg font-normal cursor-pointer text-gray-600 hover:text-gray-700">
             Digital Library

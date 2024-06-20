@@ -28,30 +28,31 @@ function Home() {
   ];
 
   const baseURL = "https://api.currentsapi.services/v1/search";
-  const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71"; // Replace with your Currents API key
+  const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71";
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await axios.get(baseURL, {
-          params: {
-            keywords: searchQuery || selectedOption,
-            apiKey: apiKey,
-            language: "en",
-            page_number: currentPage,
-            page_size: pageSize,
-          },
-        });
-        const filteredArticles = response.data.news.filter(
-          (article) => article.image
-        );
-        setArticles(filteredArticles);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchArticles();
-  }, [currentPage, selectedOption, searchQuery]);
+  }, [currentPage, selectedOption]);
+
+  const fetchArticles = async () => {
+    try {
+      const response = await axios.get(baseURL, {
+        params: {
+          keywords: searchQuery || selectedOption,
+          apiKey: apiKey,
+          language: "en",
+          page_number: currentPage,
+          page_size: pageSize,
+        },
+      });
+      const filteredArticles = response.data.news.filter(
+        (article) => article.image
+      );
+      setArticles(filteredArticles);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -70,6 +71,8 @@ function Home() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setCurrentPage(1);
+    fetchArticles();
+    setSearchQuery("");
   };
 
   const handleReadMore = (article) => {
@@ -81,37 +84,39 @@ function Home() {
 
   return (
     <>
-      <div className="main w-full bg-white">
-        <div className="filterAndSearch w-full flex flex-row gap-4 justify-end items-center mt-3">
-          <form
-            onSubmit={handleFormSubmit}
-            className="flex flex-row text-center justify-between items-center "
-          >
-            <input
-              className="searchInput bg-[#fff] border text-[#646464] py-2 px-4 w-32 -mr-8 transition-all ease-in-out duration-500 rounded-3xl"
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search..."
-            />
-            <button className="bg-[#fff] text-[#646464]">
-              <CiSearch />
-            </button>
-          </form>
-          <select
-            value={selectedOption}
-            onChange={handleSelectedChange}
-            placeholder="Categories"
-            className="bg-[#fff] text-[#646464]"
-          >
-            {keyWords.map((keyword, index) => (
-              <option key={index} value={keyword}>
-                {keyword}
-              </option>
-            ))}
-          </select>
+      <div className="main w-full px-6 bg-white">
+        <div className="filterAndSearch w-full flex flex-row gap-1 justify-end items-center mt-3">
+          <div className="gap-6 flex">
+            <form
+              onSubmit={handleFormSubmit}
+              className="flex flex-row text-center justify-between items-center "
+            >
+              <input
+                className="searchInput bg-[#fff] border text-[#646464] py-2 px-4  -mr-8 transition-all ease-in-out duration-500 rounded-lg"
+                type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                placeholder="Search..."
+              />
+              <button type="submit" className="bg-[#fff] text-[#646464]">
+                <CiSearch />
+              </button>
+            </form>
+            <select
+              value={selectedOption}
+              onChange={handleSelectedChange}
+              placeholder="Categories"
+              className="bg-[#fff] border mr-2 rounded-lg px-2 text-[#646464]"
+            >
+              {keyWords.map((keyword, index) => (
+                <option key={index} value={keyword}>
+                  {keyword}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 my-10">
+        <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-12 my-10">
           {articles.map((article, index) => (
             <ArticleCard
               key={index}
@@ -121,7 +126,7 @@ function Home() {
             />
           ))}
         </div>
-        <div className="pagination flex items-center justify-center bg-white px-4 py-3 sm:px-6">
+        <div className="pagination flex items-center justify-center bg-white my-10 mx-auto">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
