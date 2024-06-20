@@ -1,3 +1,4 @@
+// import axios from "axios";
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import ArticleCard from "./ArticleCard";
@@ -10,6 +11,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOption, setSelectedOption] = useState("everything");
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState(null);
   const pageSize = 20;
   const navigate = useNavigate();
 
@@ -29,21 +31,28 @@ function Home() {
   const baseUrl = "https://newsapi.org/v2/everything";
   const apiKey = "b9d4f5029d1c4bac8b519f72a0487f67";
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const response = await fetch(`${baseUrl}?q=${searchQuery || selectedOption}&apiKey=${apiKey}&sortBy=publishedAt&page=${currentPage}&pageSize=${pageSize}&language=en`);
-        const data = await response.json();
-        if (data.articles) {
-          const filteredArticles = data.articles.filter(article => article.urlToImage);
-          setArticles(filteredArticles);
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch(`${baseUrl}?q=${searchQuery || selectedOption}&apiKey=${apiKey}&sortBy=publishedAt&page=${currentPage}&pageSize=${pageSize}&Language=en`);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      if (data.articles) {
+        const filteredArticles = data.articles.filter(article => article.urlToImage);
+        setArticles(filteredArticles);
+      } else {
+        console.error("No articles found.");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
+
+  useEffect(() => {
     fetchArticles();
-  }, [currentPage, selectedOption, searchQuery]);
+  }, [currentPage, selectedOption]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -51,7 +60,6 @@ function Home() {
 
   const handleSelectedChange = (e) => {
     setSelectedOption(e.target.value);
-    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
@@ -62,6 +70,8 @@ function Home() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     setCurrentPage(1);
+    fetchArticles();
+    setSearchQuery("");
   };
 
   const handleReadMore = (article) => {
@@ -74,10 +84,7 @@ function Home() {
   return (
     <div className="main w-full bg-white">
       <div className="filterAndSearch w-full flex flex-row gap-4 justify-end items-center mt-3">
-        <form
-          onSubmit={handleFormSubmit}
-          className="flex flex-row text-center justify-between items-center "
-        >
+        <form onSubmit={handleFormSubmit} className="flex flex-row text-center justify-between items-center">
           <input
             className="searchInput bg-[#fff] border text-[#646464] py-2 px-4 w-32 -mr-8 transition-all ease-in-out duration-500 rounded-3xl"
             type="text"
@@ -89,12 +96,7 @@ function Home() {
             <CiSearch />
           </button>
         </form>
-        <select
-          value={selectedOption}
-          onChange={handleSelectedChange}
-          placeholder="Categories"
-          className="bg-[#fff] text-[#646464]"
-        >
+        <select value={selectedOption} onChange={handleSelectedChange} className="bg-[#fff] text-[#646464]">
           {keyWords.map((keyword, index) => (
             <option key={index} value={keyword}>
               {keyword}
@@ -102,16 +104,22 @@ function Home() {
           ))}
         </select>
       </div>
-      <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 my-10">
-        {articles.map((article, index) => (
-          <ArticleCard
-            key={index}
-            article={article}
-            onReadMore={handleReadMore}
-            formattedDate={formatDate(article.publishedAt)}
-          />
-        ))}
-      </div>
+      {error ? (
+        <div className="error-message">
+          {error}
+        </div>
+      ) : (
+        <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 my-10">
+          {articles.map((article, index) => (
+            <ArticleCard
+              key={index}
+              article={article}
+              onReadMore={handleReadMore}
+              formattedDate={formatDate(article.publishedAt)}
+            />
+          ))}
+        </div>
+      )}
       <div className="pagination flex items-center justify-center bg-white px-4 py-3 sm:px-6">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
