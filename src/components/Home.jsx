@@ -4,12 +4,11 @@ import ArticleCard from "./ArticleCard";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { formatDate } from "../utility/dateFormatter";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function Home() {
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedOption, setSelectedOption] = useState("everything");
+  const [selectedOption, setSelectedOption] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,35 +16,32 @@ function Home() {
   const navigate = useNavigate();
 
   const keyWords = [
-    "Bitcoin",
-    "Sports",
-    "Technology",
-    "Business",
-    "Entertainment",
-    "Health",
-    "Science",
-    "World",
-    "Politics",
-    "Travel",
+    "science",
+    "world",
+    "sports",
+    "technology",
+    "business",
+    "entertainment",
+    "health",
+    "war",
+    "politics",
+    "travel",
   ];
 
   const baseURL = "https://api.currentsapi.services/v1/search";
-  const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71";
+  const apiKey = "3SFbIShO9oxolsw1M1X2RpcNgVcJyOxImgWmky4a86mDWNHC";
 
   const fetchArticles = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(baseURL, {
-        params: {
-          keywords: searchQuery || selectedOption,
-          apiKey: apiKey,
-          language: "en",
-          page_number: currentPage,
-          page_size: pageSize,
-        },
-      });
-      setArticles(response.data.news);
+      const response = await fetch(
+        `${baseURL}?keywords=${
+          searchQuery || selectedOption
+        }&apiKey=${apiKey}&language=en&page_number=${currentPage}&page_size=${pageSize}`
+      );
+      const data = await response.json();
+      setArticles(data.news);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -95,13 +91,16 @@ function Home() {
               className="flex w-full flex-row text-center justify-between items-center "
             >
               <input
-                className="searchInput bg-[#fff] border text-[#646464] py-2 px-4 max-450:w-full  -mr-8 transition-all ease-in-out duration-500 rounded-lg"
+                className="searchInput bg-[#fff] border text-[#646464] py-2 px-4 max-450:w-full -mr-8 transition-all ease-in-out duration-500 rounded-lg"
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search..."
               />
-              <button type="submit" className="bg-[#fff] text-[#646464] max-450:mr-1">
+              <button
+                type="submit"
+                className="bg-[#fff] text-[#646464] max-450:mr-1"
+              >
                 <CiSearch />
               </button>
             </form>
@@ -111,6 +110,9 @@ function Home() {
               placeholder="Categories"
               className="bg-[#fff] border mr-2 max-450:m-0 rounded-lg px-2 text-[#646464]"
             >
+              <option value="" disabled hidden>
+                Categories
+              </option>
               {keyWords.map((keyword, index) => (
                 <option key={index} value={keyword}>
                   {keyword}
