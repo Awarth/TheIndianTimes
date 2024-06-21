@@ -35,7 +35,7 @@ function Detailed() {
           className="w-full object-cover pb-4 border-b"
         />
         <div className="text-gray-700 leading-relaxed">
-          {article.description}
+          {article.content}
         </div>
         <p className="text-gray-600">Read here:</p>
         <a href={article.url} className="text-blue-500" target="_blank" rel="noopener noreferrer">
