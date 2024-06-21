@@ -1,44 +1,50 @@
-import PropTypes from "prop-types";
-import defaultBG from "../images/default.png";
+import { useLocation, useNavigate } from "react-router-dom";
+import defaultBg from "../images/default.png";
 
-const ArticleCard = ({ article, onReadMore, formattedDate }) => {
+function Detailed() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  if (!location.state || !location.state.article) {
+    navigate("/");
+    return null;
+  }
+
+  const { article } = location.state;
+
+  if (!article) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="article-card flex flex-col bg-white shadow-md rounded-lg overflow-hidden h-[500px]">
-      <img
-        src={article.image !== "None" ? article.image : defaultBG}
-        alt={article.id}
-        className="w-auto h-2/5 object-cover"
-      />
-      <div className="p-4 h-3/5">
-        <h2 className="text-xl font-semibold h-max">
-          {article.title.slice(0, 45)}...
-        </h2>
-        <p className="text-gray-600 h-max my-2">
-          <span className="font-semibold">Published at:</span> {formattedDate}
+    <div className="article-detail flex flex-col py-2 my-4 justify-center items-center max-full p-4 bg-white">
+      <div className="shadow-md max-w-lg rounded-lg p-4">
+        <h1 className="text-3xl max-450:text-2xl font-bold mb-3">
+          {article.title}
+        </h1>
+        <p className="text-gray-600 pt-2 w-full border-t">
+          <span className="font-semibold">Published at:</span>{" "}
+          {new Date(article.published).toLocaleDateString()}
         </p>
-        <p className="text-gray-700 h-max">
-          {article.description.slice(0, 150)}...
+        <p className="text-gray-600 mb-1">
+          <span className="font-semibold">Author:</span> {article.author}
         </p>
-        <button
-          onClick={() => onReadMore(article)}
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded h-max"
-        >
-          Read More
-        </button>
+        <img
+          src={article.image !== "None" ? article.image : defaultBg}
+          alt={article.title}
+          className="w-full object-cover pb-4 border-b"
+        />
+        <div className="text-gray-700 leading-relaxed">
+          {article.description}
+        </div>
+        <p className="text-gray-600">Read here:</p>
+        <a href={article.url} className="text-blue-500">
+          {" "}
+          Click me
+        </a>
       </div>
     </div>
   );
-};
+}
 
-ArticleCard.propTypes = {
-  article: PropTypes.shape({
-    id: PropTypes.string,
-    image: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-  }),
-  onReadMore: PropTypes.func,
-  formattedDate: PropTypes.string,
-};
-
-export default ArticleCard;
+export default Detailed;
