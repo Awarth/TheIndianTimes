@@ -45,10 +45,7 @@ function Home() {
           page_size: pageSize,
         },
       });
-      const filteredArticles = response.data.news.filter(
-        (article) => article.image
-      );
-      setArticles(filteredArticles);
+      setArticles(response.data.news);
     } catch (error) {
       setError(error.message);
     } finally {
