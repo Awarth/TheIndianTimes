@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import defaultBG from "../images/default.png";
 
 const ArticleCard = ({ article, onReadMore, formattedDate }) => {
@@ -11,9 +11,11 @@ const ArticleCard = ({ article, onReadMore, formattedDate }) => {
       />
       <div className="p-4 h-3/5">
         <h2 className="text-xl font-semibold h-max">
-          {article.title.slice(0, 50)}...
+          {article.title.slice(0, 45)}...
         </h2>
-        <p className="text-gray-600 h-max my-2"><span className='font-semibold'>Published at:</span> {formattedDate}</p>
+        <p className="text-gray-600 h-max my-2">
+          <span className="font-semibold">Published at:</span> {formattedDate}
+        </p>
         <p className="text-gray-700 h-max">
           {article.description.slice(0, 150)}...
         </p>
@@ -30,13 +32,13 @@ const ArticleCard = ({ article, onReadMore, formattedDate }) => {
 
 ArticleCard.propTypes = {
   article: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     image: PropTypes.string,
     title: PropTypes.string,
-    description: PropTypes.string
+    description: PropTypes.string,
   }),
   onReadMore: PropTypes.func,
-  formattedDate: PropTypes.string
+  formattedDate: PropTypes.string,
 };
 
 export default ArticleCard;

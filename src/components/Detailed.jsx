@@ -1,66 +1,46 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { formatDate } from "../utility/dateFormatter";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import defaultBg from "../images/default.png";
 
 function Detailed() {
-  const { articleId } = useParams();
-  const [article, setArticle] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const baseURL = "https://api.currentsapi.services/v1/search";
-  const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71"; // Replace with your Currents API key
+  const { article } = location.state || {};
 
   useEffect(() => {
-    const fetchArticle = async () => {
-      try {
-        const response = await fetch(`${baseURL}?id=${articleId}&apiKey=${apiKey}`);
-        const data = await response.json();
-        if (data.news && data.news.length > 0) {
-          setArticle(data.news[0]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchArticle();
-  }, [articleId]);
+    if (!article) {
+      navigate('/');
+    }
+  }, [article, navigate]);
 
   if (!article) {
-    return (
-      <div className="m-w-full flex justify-center items-center text-4xl p-12">
-        Loading...
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="detailed-article w-full px-1 py-12 flex justify-center items-center">
-      <div className="detailedMain max-w-screen-md">
-        <h1 className="w-full text-4xl max-sm:text-3xl font-semibold mb-2">{article.title}</h1>
-        <p className="w-full border-b border-gray-400 pb-2 text-xl text-gray-800">
-          {article.description}
+    <div className="article-detail flex flex-col py-2 my-4 justify-center items-center max-full p-4 bg-white">
+      <div className="shadow-md max-w-lg rounded-lg p-4">
+        <h1 className="text-3xl max-450:text-2xl font-bold mb-3">{article.title}</h1>
+        <p className="text-gray-600 pt-2 w-full border-t">
+          <span className="font-semibold">Published at:</span>{" "}
+          {new Date(article.published).toLocaleDateString()}
         </p>
-        <p className="text-gray-800 pt-1">
-          {" "}
-          <span className="font-medium"> Written by:</span> {article.author}
-        </p>
-        <p className="text-gray-800">
-          {" "}
-          <span className="font-medium"> Updated at:</span>{" "}
-          {formatDate(article.published)}
+        <p className="text-gray-600 mb-1">
+          <span className="font-semibold">Author:</span> {article.author}
         </p>
         <img
-          src={article.image}
+          src={article.image !== "None" ? article.image : defaultBg}
           alt={article.title}
-          className="w-full my-2"
+          className="w-full object-cover pb-4 border-b"
         />
-        <p className="text-2xl text-gray-800">{article.description}</p>
-
-        <p>
-          <p className="mt-3 text-xl text-gray-800">Read the full article here : </p>
-          <a className="text-xl text-blue-500 " href={article.url} target="_blank" rel="noopener noreferrer">
-            Click here
-          </a>
-        </p>
+        <div className="text-gray-700 leading-relaxed">
+          {article.description}
+        </div>
+        <p className="text-gray-600">Read here:</p>
+        <a href={article.url} className="text-blue-500" target="_blank" rel="noopener noreferrer">
+          Click me
+        </a>
       </div>
     </div>
   );

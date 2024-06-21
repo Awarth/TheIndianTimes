@@ -11,6 +11,8 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedOption, setSelectedOption] = useState("everything");
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const pageSize = 20;
   const navigate = useNavigate();
 
@@ -30,11 +32,9 @@ function Home() {
   const baseURL = "https://api.currentsapi.services/v1/search";
   const apiKey = "n1sUYUbD2afMmYmFnAsTG5wUitnbCDw2swnUdWzxBSlY0y71";
 
-  useEffect(() => {
-    fetchArticles();
-  }, [currentPage, selectedOption]);
-
   const fetchArticles = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.get(baseURL, {
         params: {
@@ -50,9 +50,15 @@ function Home() {
       );
       setArticles(filteredArticles);
     } catch (error) {
-      console.log(error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchArticles();
+  }, [currentPage, selectedOption, searchQuery]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -77,7 +83,7 @@ function Home() {
 
   const handleReadMore = (article) => {
     const articleId = article.id;
-    navigate(`/article/${articleId}`);
+    navigate(`/article/${articleId}`, { state: { article } });
   };
 
   const totalPages = Math.ceil(100 / pageSize);
@@ -116,47 +122,63 @@ function Home() {
             </select>
           </div>
         </div>
-        <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-12 my-10">
-          {articles.map((article, index) => (
-            <ArticleCard
-              key={index}
-              article={article}
-              onReadMore={handleReadMore}
-              formattedDate={formatDate(article.published)}
-            />
-          ))}
-        </div>
-        <div className="pagination flex items-center justify-center bg-white my-10 mx-auto">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            disabled={currentPage === 1}
-          >
-            <span className="sr-only">Previous</span>
-            <FaChevronLeft className="h-5 w-5" aria-hidden="true" />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                currentPage === page
-                  ? "z-10 bg-blue-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            disabled={currentPage === totalPages}
-          >
-            <span className="sr-only">Next</span>
-            <FaChevronRight className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
+        {loading ? (
+          <div className="flex justify-center items-center my-10">
+            <div className="flex-col gap-4 w-full flex items-center justify-center">
+              <div className="w-28 h-28 border-8 text-blue-400 text-4xl animate-spin border-gray-300 flex items-center justify-center border-t-blue-400 rounded-full"></div>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="text-red-500 text-center my-10">
+            <p>{error}, try again later</p>
+          </div>
+        ) : (
+          <>
+            <div className="article__list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-12 my-10">
+              {articles.map((article, index) => (
+                <ArticleCard
+                  key={index}
+                  article={article}
+                  onReadMore={handleReadMore}
+                  formattedDate={formatDate(article.published)}
+                />
+              ))}
+            </div>
+            <div className="pagination flex items-center justify-center bg-white my-10 mx-auto">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                disabled={currentPage === 1}
+              >
+                <span className="sr-only">Previous</span>
+                <FaChevronLeft className="h-5 w-5" aria-hidden="true" />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                      currentPage === page
+                        ? "z-10 bg-blue-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                disabled={currentPage === totalPages}
+              >
+                <span className="sr-only">Next</span>
+                <FaChevronRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
