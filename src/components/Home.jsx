@@ -89,19 +89,19 @@ function Home() {
     <>
       <div className="main w-full px-6 bg-white">
         <div className="filterAndSearch w-full flex flex-row gap-1 justify-end items-center mt-3">
-          <div className="gap-6 flex">
+          <div className="gap-6 max-450:gap-2 flex">
             <form
               onSubmit={handleFormSubmit}
-              className="flex flex-row text-center justify-between items-center "
+              className="flex w-full flex-row text-center justify-between items-center "
             >
               <input
-                className="searchInput bg-[#fff] border text-[#646464] py-2 px-4  -mr-8 transition-all ease-in-out duration-500 rounded-lg"
+                className="searchInput bg-[#fff] border text-[#646464] py-2 px-4 max-450:w-full  -mr-8 transition-all ease-in-out duration-500 rounded-lg"
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search..."
               />
-              <button type="submit" className="bg-[#fff] text-[#646464]">
+              <button type="submit" className="bg-[#fff] text-[#646464] max-450:mr-1">
                 <CiSearch />
               </button>
             </form>
@@ -109,7 +109,7 @@ function Home() {
               value={selectedOption}
               onChange={handleSelectedChange}
               placeholder="Categories"
-              className="bg-[#fff] border mr-2 rounded-lg px-2 text-[#646464]"
+              className="bg-[#fff] border mr-2 max-450:m-0 rounded-lg px-2 text-[#646464]"
             >
               {keyWords.map((keyword, index) => (
                 <option key={index} value={keyword}>
